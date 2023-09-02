@@ -16,7 +16,6 @@ SAE (Sum of Absolute Errors).
 Function to calculate SAE (Sum of Absolute Errors) of the adjusted model.
 }
 \examples{
-require(quantreg)
 data(stackloss)
 model_L1 = regL1(stack.loss ~ stack.x)
 SAE(model_L1)

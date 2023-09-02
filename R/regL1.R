@@ -16,8 +16,12 @@
 #'
 #' @returns A fitted L1 linear regression model object.
 #'
-#' @import stats
+#' @importFrom methods as
+#' @importFrom stats model.weights model.response .getXlevels
 #' @import quantreg
+#' @importFrom MatrixModels model.Matrix
+#' @import Matrix
+#'
 #' @export
 #'
 #' @details L1 regression is an important particular case of quantile regression, so this function inherits from the "rq" class of the \code{quantreg} package.
@@ -33,45 +37,126 @@
 # @importFrom stats as.formula
 # @importFrom stats na.omit
 # Define a constructor function for the "regL1" class
-regL1 = function(formula, data, subset = NULL, weights, na.action = na.omit,
-                 method = "br", model = TRUE, contrasts = NULL, ...) {
-  tau = 0.5 # L1 reg
+regL1 = function (formula, data, subset, weights, na.action, method = "br",
+                  model = TRUE, contrasts = NULL, ...){
+  tau = 0.5 # to L1 regression
   call <- match.call()
   mf <- match.call(expand.dots = FALSE)
-  m <- match(c("formula", "data", "subset", "weights", "na.action"),
-             names(mf), 0)
-  mf <- mf[c(1, m)]
+  m <- match(c("formula", "data", "subset", "weights", "na.action"), names(mf), 0)
+  mf <- mf[c(1,m)]
   mf$drop.unused.levels <- TRUE
   mf[[1]] <- as.name("model.frame")
   mf <- eval.parent(mf)
-  if (method == "model.frame")
-    return(mf)
+  if(method == "model.frame")return(mf)
   mt <- attr(mf, "terms")
-  weights <- as.vector(model.weights(mf))
+  weights <- as.vector(stats::model.weights(mf))
   tau <- sort(unique(tau))
   eps <- .Machine$double.eps^(2/3)
-  if (any(tau == 0))
-    tau[tau == 0] <- eps
-  if (any(tau == 1))
-    tau[tau == 1] <- 1 - eps
+  if (any(tau == 0)) tau[tau == 0] <- eps
+  if (any(tau == 1)) tau[tau == 1] <- 1 - eps
+  Y <- stats::model.response(mf)
+  if(method == "sfn"){
+    if(requireNamespace("MatrixModels", quietly = TRUE)
+       && requireNamespace("Matrix", quietly = TRUE)){
+      X <- MatrixModels::model.Matrix(mt, data, sparse = TRUE)
+      vnames <- dimnames(X)[[2]]
+      X <- methods::as(X ,"matrix.csr")
+      mf$x <- X
+    }
+  }
+  else{
+    X <- stats::model.matrix(mt, mf, contrasts)
+    vnames <- dimnames(X)[[2]]
+  }
+  Rho <- function(u,tau) u * (tau - (u < 0))
+  if (length(tau) > 1) {
+    if (any(tau < 0) || any(tau > 1))
+      stop("invalid tau:  taus should be >= 0 and <= 1")
+    coef <- matrix(0, ncol(X), length(tau))
+    rho <- rep(0, length(tau))
+    if(!(method %in% c("ppro","qfnb","pfnb"))){
+      fitted <- resid <- matrix(0, nrow(X), length(tau))
+      for(i in 1:length(tau)){
+        z <- {if (length(weights))
+          quantreg::rq.wfit(X, Y, tau = tau[i], weights, method, ...)
+          else quantreg::rq.fit(X, Y, tau = tau[i], method, ...)
+        }
+        coef[,i] <- z$coefficients
+        resid[,i] <- z$residuals
+        rho[i] <- sum(Rho(z$residuals,tau[i]))
+        fitted[,i] <- Y - z$residuals
+      }
+      taulabs <- paste("tau=",format(round(tau,3)))
+      dimnames(coef) <- list(vnames, taulabs)
+      dimnames(resid)[[2]] <- taulabs
+      fit <- z
+      fit$coefficients <-  coef
+      fit$residuals <- resid
+      fit$fitted.values <- fitted
+      if(method == "lasso") class(fit) <- c("lassorqs","rqs")
+      else if(method == "scad") class(fit) <- c("scadrqs","rqs")
+      else class(fit) <- "rqs"
+    }
+    else if(method == "pfnb"){ # Preprocessing in fortran loop
+      fit <- quantreg::rq.fit.pfnb(X, Y, tau)
+      class(fit) = "rqs"
+    }
+    else if(method == "qfnb"){ # simple fortran loop method
+      fit <- quantreg::rq.fit.qfnb(X, Y, tau)
+      class(fit) = ifelse(length(tau) == 1,"rq","rqs")
+    }
+    else if(method == "ppro"){ # Preprocessing method in R
+      fit <- quantreg::rq.fit.ppro(X, Y, tau, ...)
+      class(fit) = ifelse(length(tau) == 1,"rq","rqs")
+    }
+  }
+  else{
+    process <- (tau < 0 || tau > 1)
+    if(process && method != "br")
+      stop("when tau not in [0,1] method br must be used")
+    fit <- {
+      if(length(weights))
+        quantreg::rq.wfit(X, Y, tau = tau, weights, method, ...)
+      else quantreg::rq.fit(X, Y, tau = tau, method, ...)
+    }
+    if(process)
+      rho <- list(tau = fit$sol[1,], rho = fit$sol[3,])
+    else {
+      if(length(dim(fit$residuals)))
+        dimnames(fit$residuals) <- list(dimnames(X)[[1]],NULL)
+      rho <-  sum(Rho(fit$residuals,tau))
+    }
+    if(method == "lasso") class(fit) <- c("lassorq","rq")
+    else if(method == "scad") class(fit) <- c("scadrq","rq")
+    else class(fit) <- ifelse(process, "rq.process", "rq")
+  }
+  fit$na.action <- attr(mf, "na.action")
+  fit$formula <- formula
+  fit$terms <- mt
+  fit$xlevels <- stats::.getXlevels(mt,mf)
+  fit$call <- call
+  fit$tau <- tau
+  fit$weights <- weights
+  fit$residuals <- drop(fit$residuals)
+  fit$rho <- rho
+  fit$method <- method
+  fit$fitted.values <- drop(fit$fitted.values)
 
-  # Fit the model using rq() with the provided formula
-  model_formula = stats::as.formula(match.call()$formula)
-  # Ajuste do modelo de regressão usando rq() com tau = 0.5
-  model = quantreg::rq(formula = model_formula, data = data, subset, weights, tau=.5,
-                       na.action = na.omit, method="br", model = TRUE,
-                        contrasts = NULL, ...)
+  attr(fit, "na.message") <- attr(m, "na.message")
+  if(model) fit$model <- mf
+  #fit
+  ### quantreg::rq END  ### my code START
 
-  model$call_rq = model$call
-  model$call = call
-  model$SAE = sum(abs(model$residuals))
-  model$N = length(model$y)
-  model$MAE = model$SAE / model$N # lambda_mle
+  fit$call_rq = fit$call
+  fit$call = call
+  fit$SAE = sum(abs(fit$residuals))
+  fit$N = length(fit$y)
+  fit$MAE = fit$SAE / fit$N # lambda_mle
 
   # lambda_ros calculations | begin
-  res = cbind(sort(as.numeric(model$residuals)))
-  res1 = matrix(0, nrow(res) -ncol(model$x),1)
-  n = nrow(model$x) - ncol(model$x)
+  res = cbind(sort(as.numeric(fit$residuals)))
+  res1 = matrix(0, nrow(res) -ncol(fit$x),1)
+  n = nrow(fit$x) - ncol(fit$x)
   m = (n+1)/2 -sqrt(n)
   j=1
   for(i in 1:nrow(res)) if(res[i] !=0) ((res1[j] = res[i]) & (j = j+1))
@@ -84,16 +169,13 @@ regL1 = function(formula, data, subset = NULL, weights, na.action = na.omit,
   lambda_robust = sqrt(n)*(res[e1] -res1[e2])/4
   # lambda_ros calculations | end
 
-  model$lambda_ros = lambda_robust
+  fit$lambda_ros = lambda_robust
 
   #model = structure(model, class = c('regL1', 'rq')) # alterando a classe
-  class(model) = "regL1"
-
+  class(fit) = "regL1"
   # Create an object of class "regL1"
-  #object = list(model = model)
-  #class(object) = "regL1"
 
-  return(model)
+  return(fit)
 }
 
 
@@ -101,13 +183,17 @@ regL1 = function(formula, data, subset = NULL, weights, na.action = na.omit,
 #'
 #' Print summary of linear L1 regression object.
 #'
+#'
 #' @param x This is an object of class "\code{summary.regL1}" produced by a call to \code{summary.regL1()}.
 #' @param digits Significant digits reported in the printed table.
 #' @param ... Optional arguments.
 #' @returns No return value, called for side effects.
 #'
-#' @import greekLetters
 #' @export
+#'
+#' @import greekLetters
+#' @method print summary.regL1
+#' @rdname print.summary.regL1
 print.summary.regL1 = function(x, digits = max(5, .Options$digits - 2), ...)
   {
     cat("\nCall: ")
@@ -135,7 +221,8 @@ print.summary.regL1 = function(x, digits = max(5, .Options$digits - 2), ...)
 
 #' Summary methods for L1 Regression
 #'
-#' Returns a summary list for a L1 regression fit. A null value will be returned if printing is invoked
+#' Returns a summary list for a L1 regression fit. A null value will be returned if printing is invoked.
+#'
 #'
 #' @param object Object returned from regL1 representing the fit of the L1 model.
 #' @param se specifies the method used to compute standard standard errors. There are currently seven available methods: "rank", "iid", "nid", "ker", "boot", "BLB", "conquer" and "extreme".
@@ -146,10 +233,15 @@ print.summary.regL1 = function(x, digits = max(5, .Options$digits - 2), ...)
 #' @param ... Optional arguments. See \code{\link{summary.rq}} for more details.
 #'
 #' @returns No return value, called for side effects.
+#' @export
+#'
 #' @import quantreg
 #' @importFrom utils modifyList
+#' @importFrom stats coefficients dnorm qnorm pt quantile terms var model.matrix
 #' @importFrom conquer conquer
-#' @export
+#'
+#' @method summary regL1
+#' @rdname summary.regL1
 #'
 #' @seealso
 #' \code{\link{regL1}} for fitting linear L1 models.
@@ -162,7 +254,7 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
     stop("no inference for lasso'd rq fitting: try rqss (if brave, or credulous)")
   if (object$method == "conquer")
     se = "conquer"
-  mt <- terms(object)
+  mt <- stats::terms(object)
   m <- model.frame(object)
   y <- model.response(m)
   dots <- list(...)
@@ -172,14 +264,14 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
     vnames <- names(object$coef)
     ctrl <- object$control
   }
-  else {
-    x <- model.matrix(mt, m, contrasts = object$contrasts)
+  else { # can be Matrix:: em vez de stats::
+    x <- stats::model.matrix(mt, m, contrasts = object$contrasts)
     vnames <- dimnames(x)[[2]]
   }
   wt <- as.vector(model.weights(object$model))
   tau <- object$tau
   eps <- .Machine$double.eps^(1/2)
-  coef <- coefficients(object)
+  coef <- stats::coefficients(object)
   if (is.matrix(coef))
     coef <- coef[, 1]
   resid <- object$residuals
@@ -244,9 +336,9 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
     h <- bandwidth.rq(tau, n, hs = hs)
     while ((tau - h < 0) || (tau + h > 1)) h <- h/2
     uhat <- c(y - x %*% coef)
-    h <- (qnorm(tau + h) - qnorm(tau - h)) * min(sqrt(var(uhat)),
-                                                 (quantile(uhat, 0.75) - quantile(uhat, 0.25))/1.34)
-    f <- dnorm(uhat/h)/h
+    h <- (stats::qnorm(tau + h) - stats::qnorm(tau - h)) * min(sqrt(stats::var(uhat)),
+                                                 (stats::quantile(uhat, 0.75) - stats::quantile(uhat, 0.25))/1.34)
+    f <- stats::dnorm(uhat/h)/h
     fxxinv <- diag(p)
     fxxinv <- backsolve(qr(sqrt(f) * x)$qr[1:p, 1:p, drop = FALSE],
                         fxxinv)
@@ -322,14 +414,14 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
     B <- (mbe - 1) * taub * sqrt(mofn/(taub * (1 - taub))) *
       (B0 - b0)/c((Bm - B0) %*% xbar)
     if (tau0 <= 0.5) {
-      bbc <- b0 - apply(B, 2, quantile, 0.5, na.rm = TRUE)/An
-      ciL <- b0 - apply(B, 2, quantile, 1 - alpha/2, na.rm = TRUE)/An
-      ciU <- b0 - apply(B, 2, quantile, alpha/2, na.rm = TRUE)/An
+      bbc <- b0 - apply(B, 2, stats::quantile, 0.5, na.rm = TRUE)/An
+      ciL <- b0 - apply(B, 2, stats::quantile, 1 - alpha/2, na.rm = TRUE)/An
+      ciU <- b0 - apply(B, 2, stats::quantile, alpha/2, na.rm = TRUE)/An
     }
     else {
-      bbc <- -(b0 - apply(B, 2, quantile, 0.5, na.rm = TRUE)/An)
-      ciL <- -(b0 - apply(B, 2, quantile, alpha/2, na.rm = TRUE)/An)
-      ciU <- -(b0 - apply(B, 2, quantile, 1 - alpha/2,
+      bbc <- -(b0 - apply(B, 2, stats::quantile, 0.5, na.rm = TRUE)/An)
+      ciL <- -(b0 - apply(B, 2, stats::quantile, alpha/2, na.rm = TRUE)/An)
+      ciU <- -(b0 - apply(B, 2, stats::quantile, 1 - alpha/2,
                           na.rm = TRUE)/An)
     }
     B <- R - sum(is.na(B[, 1]))
@@ -361,7 +453,7 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
     coef[, 2] <- serr
     coef[, 3] <- coef[, 1]/coef[, 2]
     coef[, 4] <- if (rdf > 0)
-      2 * (1 - pt(abs(coef[, 3]), rdf))
+      2 * (1 - stats::pt(abs(coef[, 3]), rdf))
     else NA
   }
 
@@ -403,16 +495,22 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
 #'
 #' Print an object generated by regL1
 #'
+#'
 #' @param x Object returned from regL1 representing the fit of the L1 model.
 #' @param ... Optional arguments.
 #'
 #' @returns No return value, called for side effects.
 #'
-#' @import stats
 #' @export
+#' @importFrom stats coef residuals
 #'
 #' @seealso
 #' \code{\link{regL1}} for fitting linear L1 models.
+#'
+#' @method print regL1
+#' @rdname print.regL1
+#
+
 # Define a summary method for the "regL1" class
 print.regL1 = function(x, ...) {
   if (!is.null(cl <- x$call)) {
@@ -423,7 +521,7 @@ print.regL1 = function(x, ...) {
   cat("\nCoefficients:\n")
   print(coef, ...)
   rank <- x$rank
-  nobs <- length(residuals(x))
+  nobs <- length(stats::residuals(x))
   if (is.matrix(coef))
     p <- dim(coef)[1]
   else p <- length(coef)
@@ -441,6 +539,7 @@ print.regL1 = function(x, ...) {
 #'
 #' @param object Object from "regL1" class.
 #' @returns Object with class "rq".
+#'
 #'
 #' @export
 #'

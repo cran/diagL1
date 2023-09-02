@@ -16,7 +16,6 @@ lambda MLE (Maximum Likelihood Estimator) estimator.
 Function to estimate lambda via MLE
 }
 \examples{
-require(quantreg)
 data(stackloss)
 model_L1 = regL1(stack.loss ~ stack.x)
 lambda_mle(model_L1)

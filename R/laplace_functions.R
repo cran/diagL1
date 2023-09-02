@@ -47,11 +47,14 @@ qlaplace = function(p, location = 0, scale = 1) {
 #' @param location Location parameter of the Laplace distribution (default = 0).
 #' @param scale Scale parameter of the Laplace distribution (default = 1).
 #' @returns Vector of generated random values.
+#'
+#' @importFrom stats runif
+#'
 #' @examples
 #' rlaplace(10, 0, 1)
 #' @export
 rlaplace = function(n, location = 0, scale = 1) {
-  u = runif(n)
+  u = stats::runif(n)
   values = location - scale * sign(u - 0.5) * log(1 - 2 * abs(u - 0.5))
   return(values)
 }

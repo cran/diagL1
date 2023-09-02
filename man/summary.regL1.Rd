@@ -33,7 +33,7 @@
 No return value, called for side effects.
 }
 \description{
-Returns a summary list for a L1 regression fit. A null value will be returned if printing is invoked
+Returns a summary list for a L1 regression fit. A null value will be returned if printing is invoked.
 }
 \seealso{
 \code{\link{regL1}} for fitting linear L1 models.

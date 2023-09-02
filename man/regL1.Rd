@@ -7,9 +7,9 @@
 regL1(
   formula,
   data,
-  subset = NULL,
+  subset,
   weights,
-  na.action = na.omit,
+  na.action,
   method = "br",
   model = TRUE,
   contrasts = NULL,

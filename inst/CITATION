@@ -1,0 +1,11 @@
+citHeader("To cite package digaL1 in publications use:")
+
+bibentry(bibtype="Manual",
+  title = "diagL1: Routines for Fit, Inference and Diagnostics in Linear L1 Models",
+  author = c(person("Kévin Allan Sales Rodrigues", comment = c(ORCID = "0000-0003-4925-5883")), person("Silvia Nagib Elian")),
+  year = "2023",
+  note = "R package version 0.0.6",
+  url = {"https://CRAN.R-project.org/package=diagL1"},
+  textVersion =
+  paste("Rodrigues, K. A. S. and Elian, S. N. (2023). diagL1: Routines for Fit, Inference and Diagnostics in Linear L1 Models (version 0.0.6). URL: https://CRAN.R-project.org/package=diagL1 .")
+  )

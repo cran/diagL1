@@ -16,7 +16,6 @@ Robust lambda estimator, which is based on the residuals order statistics.
 Function to compute a robust lambda estimator, which is based on the residuals order statistics.
 }
 \examples{
-require(quantreg)
 data(stackloss)
 model_L1 = regL1(stack.loss ~ stack.x)
 lambda_ros(model_L1)

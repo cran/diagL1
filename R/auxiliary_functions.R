@@ -21,7 +21,6 @@
 #' @export
 #'
 #' @examples
-#' require(quantreg)
 #' data(stackloss)
 #' model_L1 = regL1(stack.loss ~ stack.x)
 #' lambda_ros(model_L1)
@@ -38,7 +37,6 @@ lambda_ros = function(model){
 #' @export
 #'
 #' @examples
-#' require(quantreg)
 #' data(stackloss)
 #' model_L1 = regL1(stack.loss ~ stack.x)
 #' lambda_mle(model_L1)
@@ -57,7 +55,6 @@ lambda_mle = function(model){
 #' @export
 #'
 #' @examples
-#' require(quantreg)
 #' data(stackloss)
 #' model_L1 = regL1(stack.loss ~ stack.x)
 #' SAE(model_L1)
