@@ -275,6 +275,7 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
   if (is.matrix(coef))
     coef <- coef[, 1]
   resid <- object$residuals
+
   n <- length(y)
   p <- length(coef)
   rdf <- n - p
@@ -296,11 +297,13 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
     xxinv <- backsolve(qr(x)$qr[1:p, 1:p, drop = FALSE],
                        xxinv)
     xxinv <- xxinv %*% t(xxinv)
+
     pz <- sum(abs(resid) < eps)
     h <- max(p + 1, ceiling(n * bandwidth.rq(tau, n, hs = hs)))
     ir <- (pz + 1):(h + pz + 1)
     ord.resid <- sort(resid[order(abs(resid))][ir])
     xt <- ir/(n - p)
+
     sparsity <- rq(ord.resid ~ xt)$coef[2]
     cov <- sparsity^2 * xxinv * tau * (1 - tau)
     scale <- 1/sparsity

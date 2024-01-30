@@ -30,6 +30,7 @@ likelihoodCD = function(model){
   y = as.numeric(model$y)
   x = model.frame(model)[,-1]
   colnames(x) <- NULL
+  x = as.matrix(x)
   #beta = as.numeric(coef(model))
   SAE = model$SAE # same that sum(abs(y -as.matrix(cbind(1,x))%*%as.matrix(beta)))
   N = model$N

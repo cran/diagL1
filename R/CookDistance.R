@@ -28,6 +28,7 @@ CookDistance = function(model){
   y = as.numeric(model$y)
   x = model.frame(model)[,-1]
   colnames(x) <- NULL
+  x = as.matrix(x)
   beta = as.numeric(coef(model))
   lambda_mle = model$MAE
   N = model$N
