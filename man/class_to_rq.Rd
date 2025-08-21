@@ -16,6 +16,6 @@ Object with class "rq".
 Changing the object's class from "regL1" to "rq" allows you to use functions from the 'quantreg' package normally.
 }
 \seealso{
-\code{\link{regL1}} for fitting linear L1 models.
-\code{\link{rq}} for fitting linear L1 models.
+\code{\link[diagL1]{regL1}} for fitting linear L1 models.
+\code{\link[quantreg]{rq}} for fitting linear L1 models.
 }

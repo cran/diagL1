@@ -31,5 +31,5 @@ summary(mod)
 Atkinson, A.C. and Riani, M. (2000). \emph{Robust Diagnostic Regression Analysis}. New York: Springer.
 }
 \seealso{
-\code{\link{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
+\code{\link[diagL1]{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
 }

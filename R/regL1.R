@@ -2,17 +2,17 @@
 
 #' Fitting Linear L1 Models
 #'
-#' This function fits an L1 regression model using the \code{\link{rq}} function from the 'quantreg' package. L1 regression allows dealing with outliers and non-normal distributions in the data.
+#' This function fits an L1 regression model using the \code{\link[quantreg]{rq}} function from the 'quantreg' package. L1 regression allows dealing with outliers and non-normal distributions in the data.
 #'
 #' @param formula a formula object, with the response on the left of a ~ operator, and the terms, separated by + operators, on the right.
 #' @param data a data.frame in which to interpret the variables named in the formula, or in the subset and the weights argument. If this is missing, then the variables in the formula should be on the search list. This may also be a single number to handle some special cases – see below for details.
 #' @param subset an optional vector specifying a subset of observations to be used in the fitting process.
 #' @param weights vector of observation weights; if supplied, the algorithm fits to minimize the sum of the weights multiplied into the absolute residuals. The length of weights must be the same as the number of observations. The weights must be nonnegative and it is strongly recommended that they be strictly positive, since zero weights are ambiguous.
 #' @param na.action a function to filter missing data. This is applied to the model.frame after any subset argument has been used. The default (with na.fail) is to create an error if any missing values are found. A possible alternative is na.omit, which deletes observations that contain one or more missing values.
-#' @param method the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link{rq}} for more details.
+#' @param method the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link[quantreg]{rq}} for more details.
 #' @param model if TRUE then the model frame is returned. This is essential if one wants to call summary subsequently.
 #' @param contrasts a list giving contrasts for some or all of the factors default = NULL appearing in the model formula. The elements of the list should have the same name as the variable and should be either a contrast matrix (specifically, any full-rank matrix with as many rows as there are levels in the factor), or else a function to compute such a matrix given the number of levels.
-#' @param ... additional arguments for the fitting routines (see \code{\link{rq.fit.br}} and \code{\link{rq.fit.fnb}}, etc. and the functions they call).
+#' @param ... additional arguments for the fitting routines (see \code{\link[quantreg]{rq.fit.br}} and \code{\link[quantreg]{rq.fit.fnb}}, etc. and the functions they call).
 #'
 #' @returns A fitted L1 linear regression model object.
 #'
@@ -228,9 +228,9 @@ print.summary.regL1 = function(x, digits = max(5, .Options$digits - 2), ...)
 #' @param se specifies the method used to compute standard standard errors. There are currently seven available methods: "rank", "iid", "nid", "ker", "boot", "BLB", "conquer" and "extreme".
 #' @param covariance logical flag to indicate whether the full covariance matrix of the estimated parameters should be returned.
 #' @param hs Use Hall Sheather bandwidth for sparsity estimation If false revert to Bofinger bandwidth.
-#' @param U Resampling indices or gradient evaluations used for bootstrap, see \code{\link{summary.rq}} and \code{\link{boot.rq}} for more details.
+#' @param U Resampling indices or gradient evaluations used for bootstrap, see \code{\link[quantreg]{summary.rq}} and \code{\link[quantreg]{boot.rq}} for more details.
 #' @param gamma parameter controlling the effective sample size of the'bag of little bootstrap samples that will be b = n^gamma where n is the sample size of the original model.
-#' @param ... Optional arguments. See \code{\link{summary.rq}} for more details.
+#' @param ... Optional arguments. See \code{\link[quantreg]{summary.rq}} for more details.
 #'
 #' @returns No return value, called for side effects.
 #' @export
@@ -244,8 +244,8 @@ print.summary.regL1 = function(x, digits = max(5, .Options$digits - 2), ...)
 #' @rdname summary.regL1
 #'
 #' @seealso
-#' \code{\link{regL1}} for fitting linear L1 models.
-#' \code{\link{summary.rq}} summary methods for Quantile Regression.
+#' \code{\link[diagL1]{regL1}} for fitting linear L1 models.
+#' \code{\link[quantreg]{summary.rq}} summary methods for Quantile Regression.
 #'
 # Define a summary method for the "regL1" class
 summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = NULL, gamma = 0.7, ...){
@@ -508,7 +508,7 @@ summary.regL1 = function(object, se = NULL, covariance = FALSE, hs = TRUE, U = N
 #' @importFrom stats coef residuals
 #'
 #' @seealso
-#' \code{\link{regL1}} for fitting linear L1 models.
+#' \code{\link[diagL1]{regL1}} for fitting linear L1 models.
 #'
 #' @method print regL1
 #' @rdname print.regL1
@@ -547,8 +547,8 @@ print.regL1 = function(x, ...) {
 #' @export
 #'
 #' @seealso
-#' \code{\link{regL1}} for fitting linear L1 models.
-#' \code{\link{rq}} for fitting linear L1 models.
+#' \code{\link[diagL1]{regL1}} for fitting linear L1 models.
+#' \code{\link[quantreg]{rq}} for fitting linear L1 models.
 class_to_rq = function(object) {
   class(object) = "rq"
   return(object)
@@ -564,8 +564,8 @@ class_to_rq = function(object) {
 #' @export
 #'
 #' @seealso
-#' \code{\link{regL1}} for fitting linear L1 models.
-#' \code{\link{rq}} for fitting linear L1 models.
+#' \code{\link[diagL1]{regL1}} for fitting linear L1 models.
+#' \code{\link[quantreg]{rq}} for fitting linear L1 models.
 class_to_regL1 = function(object) {
   class(object) = "regL1"
   return(object)

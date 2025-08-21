@@ -1,6 +1,6 @@
 #' Fitting Heteroscedastic Linear L1 Models
 #'
-#' This function fits an groupwise heteroscedastic L1 regression model using the \code{\link{rq}} function from the 'quantreg' package.
+#' This function fits an groupwise heteroscedastic L1 regression model using the \code{\link[quantreg]{rq}} function from the 'quantreg' package.
 #'
 #'
 #' @param x the regression design matrix.
@@ -9,9 +9,9 @@
 #' @param tolerance threshold that determines when the iterative algorithm should stop.
 #' @param max_iteration maximum number of iterations.
 #' @param na.action a function to filter missing data. This is applied to the model.frame after any subset argument has been used. The default (with na.fail) is to create an error if any missing values are found. A possible alternative is na.omit, which deletes observations that contain one or more missing values.
-#' @param method the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link{rq}} for more details.
+#' @param method the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link[quantreg]{rq}} for more details.
 #' @param model if TRUE then the model frame is returned. This is essential if one wants to call summary subsequently.
-#' @param ... additional arguments for the fitting routines (see \code{\link{rq.fit.br}} and \code{\link{rq.fit.fnb}}, etc. and the functions they call).
+#' @param ... additional arguments for the fitting routines (see \code{\link[quantreg]{rq.fit.br}} and \code{\link[quantreg]{rq.fit.fnb}}, etc. and the functions they call).
 #'
 #' @returns A fitted heteroscedastic L1 linear regression model object.
 #'

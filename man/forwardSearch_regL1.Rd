@@ -24,7 +24,7 @@ forwardSearch_regL1(
 
 \item{data}{a data.frame in which to interpret the variables named in the formula, or in the subset and the weights argument. If this is missing, then the variables in the formula should be on the search list. This may also be a single number to handle some special cases – see below for details.}
 
-\item{nsamp}{the initial subset for the forward search in linear regression is found by fitting the regression model with the R function \code{\link{lmsreg}}. This argument allows to control how many subsets are used in the Least Median of Squares regression. The choices are: the number of samples or "best" (the default) or "exact" or "sample". For details see \code{\link{lmsreg}}.}
+\item{nsamp}{the initial subset for the forward search in linear regression is found by fitting the regression model with the R function \code{\link[MASS]{lmsreg}}. This argument allows to control how many subsets are used in the Least Median of Squares regression. The choices are: the number of samples or "best" (the default) or "exact" or "sample". For details see \code{\link[MASS]{lmsreg}}.}
 
 \item{intercept}{logical for the inclusion of the intercept (if no formula is provided).}
 
@@ -36,13 +36,13 @@ forwardSearch_regL1(
 
 \item{na.action}{a function to filter missing data. This is applied to the model.frame after any subset argument has been used. The default (with na.fail) is to create an error if any missing values are found. A possible alternative is na.omit, which deletes observations that contain one or more missing values.}
 
-\item{method}{the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link{rq}} for more details.}
+\item{method}{the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link[quantreg]{rq}} for more details.}
 
 \item{model}{if TRUE then the model frame is returned. This is essential if one wants to call summary subsequently.}
 
 \item{contrasts}{a list giving contrasts for some or all of the factors default = NULL appearing in the model formula. The elements of the list should have the same name as the variable and should be either a contrast matrix (specifically, any full-rank matrix with as many rows as there are levels in the factor), or else a function to compute such a matrix given the number of levels.}
 
-\item{...}{additional arguments for the fitting routines (see \code{\link{rq.fit.br}} and \code{\link{rq.fit.fnb}}, etc. and the functions they call).}
+\item{...}{additional arguments for the fitting routines (see \code{\link[quantreg]{rq.fit.br}} and \code{\link[quantreg]{rq.fit.fnb}}, etc. and the functions they call).}
 }
 \value{
 A fitted forward search in linear L1 regression model object.

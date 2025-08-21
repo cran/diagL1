@@ -26,5 +26,5 @@ mod # or print(mod)
 
 }
 \seealso{
-\code{\link{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
+\code{\link[diagL1]{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
 }

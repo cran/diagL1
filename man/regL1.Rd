@@ -27,19 +27,19 @@ regL1(
 
 \item{na.action}{a function to filter missing data. This is applied to the model.frame after any subset argument has been used. The default (with na.fail) is to create an error if any missing values are found. A possible alternative is na.omit, which deletes observations that contain one or more missing values.}
 
-\item{method}{the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link{rq}} for more details.}
+\item{method}{the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link[quantreg]{rq}} for more details.}
 
 \item{model}{if TRUE then the model frame is returned. This is essential if one wants to call summary subsequently.}
 
 \item{contrasts}{a list giving contrasts for some or all of the factors default = NULL appearing in the model formula. The elements of the list should have the same name as the variable and should be either a contrast matrix (specifically, any full-rank matrix with as many rows as there are levels in the factor), or else a function to compute such a matrix given the number of levels.}
 
-\item{...}{additional arguments for the fitting routines (see \code{\link{rq.fit.br}} and \code{\link{rq.fit.fnb}}, etc. and the functions they call).}
+\item{...}{additional arguments for the fitting routines (see \code{\link[quantreg]{rq.fit.br}} and \code{\link[quantreg]{rq.fit.fnb}}, etc. and the functions they call).}
 }
 \value{
 A fitted L1 linear regression model object.
 }
 \description{
-This function fits an L1 regression model using the \code{\link{rq}} function from the 'quantreg' package. L1 regression allows dealing with outliers and non-normal distributions in the data.
+This function fits an L1 regression model using the \code{\link[quantreg]{rq}} function from the 'quantreg' package. L1 regression allows dealing with outliers and non-normal distributions in the data.
 }
 \details{
 L1 regression is an important particular case of quantile regression, so this function inherits from the "rq" class of the \code{quantreg} package.

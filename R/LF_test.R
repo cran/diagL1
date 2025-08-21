@@ -26,10 +26,14 @@
 #'
 #' @importFrom stats qchisq
 #' @export
-#' @details The 3 statistics to test lack of fit are discussed in Rodrigues (2024), for more details see this reference. In practice, use the LF1_MLE statistic results. These tests were developed with just one explanatory variable in mind, which is why we include an error if there is more than one explanatory variable.
+#' @details Check the references.
 #'
-#' @references Rodrigues, K. A. S. (2024). \strong{Analysis of the adjustment of the L1 regression model}.
-#' Phd dissertation, University of São Paulo, BR.
+#' @references Rodrigues, K. A. S., Elian, S. N., & Pereira, G. H. A. (2025). \emph{Homoscedasticity tests for L1 regression and their performance evaluation through simulations}. Statistics, Advance online publication. https://doi.org/10.1080/02331888.2025.2536097
+#'
+#' Rodrigues, K. A. S., Elian, S. N., & Pereira, G. H. A. (2025). Homoscedasticity tests for L1 regression and their performance evaluation through simulations. \emph{Statistics}, Advance online publication. https://doi.org/10.1080/02331888.2025.2536097
+#'
+#' Rodrigues, K. A. S., & Elian, S. N. (2025). Influence measures for L1 regression: an analysis with the R package diagL1. \emph{Journal of Applied Statistics}, Advance online publication. https://doi.org/10.1080/02664763.2025.2510691
+#'
 #'
 #' @examples
 #' \donttest{

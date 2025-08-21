@@ -18,7 +18,7 @@
 #' @rdname summary.forwardSearch_regL1
 #'
 #' @seealso
-#' \code{\link{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
+#' \code{\link[diagL1]{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
 #'
 #' @examples
 #' \donttest{
@@ -91,7 +91,7 @@ summary.forwardSearch_regL1 = function(object, steps = "auto", ...)
 #' @export
 #'
 #' @seealso
-#' \code{\link{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
+#' \code{\link[diagL1]{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
 #'
 #'
 #' @method print forwardSearch_regL1
@@ -139,7 +139,7 @@ print.forwardSearch_regL1 = function(x, ...)
 #' @export
 #'
 #' @seealso
-#' \code{\link{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
+#' \code{\link[diagL1]{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
 #'
 #'
 #' @import greekLetters
@@ -217,7 +217,7 @@ print.summary.forwardSearch_regL1 = function(x, digits = 4, ...)
 #' @export
 #'
 #' @seealso
-#' \code{\link{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
+#' \code{\link[diagL1]{forwardSearch_regL1}} for apply forward search in linear L1 regression model.
 #'
 #'
 #' @examples

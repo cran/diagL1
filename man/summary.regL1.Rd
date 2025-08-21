@@ -23,11 +23,11 @@
 
 \item{hs}{Use Hall Sheather bandwidth for sparsity estimation If false revert to Bofinger bandwidth.}
 
-\item{U}{Resampling indices or gradient evaluations used for bootstrap, see \code{\link{summary.rq}} and \code{\link{boot.rq}} for more details.}
+\item{U}{Resampling indices or gradient evaluations used for bootstrap, see \code{\link[quantreg]{summary.rq}} and \code{\link[quantreg]{boot.rq}} for more details.}
 
 \item{gamma}{parameter controlling the effective sample size of the'bag of little bootstrap samples that will be b = n^gamma where n is the sample size of the original model.}
 
-\item{...}{Optional arguments. See \code{\link{summary.rq}} for more details.}
+\item{...}{Optional arguments. See \code{\link[quantreg]{summary.rq}} for more details.}
 }
 \value{
 No return value, called for side effects.
@@ -36,6 +36,6 @@ No return value, called for side effects.
 Returns a summary list for a L1 regression fit. A null value will be returned if printing is invoked.
 }
 \seealso{
-\code{\link{regL1}} for fitting linear L1 models.
-\code{\link{summary.rq}} summary methods for Quantile Regression.
+\code{\link[diagL1]{regL1}} for fitting linear L1 models.
+\code{\link[quantreg]{summary.rq}} summary methods for Quantile Regression.
 }

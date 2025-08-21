@@ -25,7 +25,7 @@ regL1_het(
 
 \item{na.action}{a function to filter missing data. This is applied to the model.frame after any subset argument has been used. The default (with na.fail) is to create an error if any missing values are found. A possible alternative is na.omit, which deletes observations that contain one or more missing values.}
 
-\item{method}{the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link{rq}} for more details.}
+\item{method}{the algorithmic method used to compute the fit. There are several options: "br", "fn", "pfn", "sfn", "fnc", "conquer", "pfnb", "qfnb", "ppro" and "lasso". See \code{\link[quantreg]{rq}} for more details.}
 
 \item{model}{if TRUE then the model frame is returned. This is essential if one wants to call summary subsequently.}
 
@@ -33,13 +33,13 @@ regL1_het(
 
 \item{max_iteration}{maximum number of iterations.}
 
-\item{...}{additional arguments for the fitting routines (see \code{\link{rq.fit.br}} and \code{\link{rq.fit.fnb}}, etc. and the functions they call).}
+\item{...}{additional arguments for the fitting routines (see \code{\link[quantreg]{rq.fit.br}} and \code{\link[quantreg]{rq.fit.fnb}}, etc. and the functions they call).}
 }
 \value{
 A fitted heteroscedastic L1 linear regression model object.
 }
 \description{
-This function fits an groupwise heteroscedastic L1 regression model using the \code{\link{rq}} function from the 'quantreg' package.
+This function fits an groupwise heteroscedastic L1 regression model using the \code{\link[quantreg]{rq}} function from the 'quantreg' package.
 }
 \details{
 L1 regression is an important particular case of quantile regression, so this function inherits from the "rq" class of the \code{quantreg} package.
